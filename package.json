@@ -1,0 +1,39 @@
+{
+  "name": "cypress-schema-validator",
+  "version": "0.0.1",
+  "description": "Lightweight Cypress plugin for API schema validation. It leverages both the AJV validator (for plain JSON schemas, Swagger documents, and OpenAPI schemas) and the Zod validator (for Zod schemas).",
+  "main": "src/index.js",
+  "types": "src/index.d.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sclavijosuero/cypress-schema-validator.git"
+  },
+  "keywords": [
+    "plugin",
+    "cypress",
+    "ajv",
+    "zod",
+    "schema",
+    "validator",
+    "json"
+  ],
+  "author": "Sebastian Clavijo Suero",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/sclavijosuero/cypress-schema-validator/issues"
+  },
+  "homepage": "https://github.com/sclavijosuero/cypress-schema-validator#readme",
+  "devDependencies": {
+    "@bahmutov/cy-api": "^2.2.6",
+    "cypress": "^13.17.0"
+  },
+  "dependencies": {
+    "core-ajv-schema-validator": "^1.0.0",
+    "core-zod-schema-validator": "^1.0.0",
+    "cypress-plugin-api": "^2.11.2",
+    "highlight.js": "^11.10.0"
+  }
+}
