@@ -28,7 +28,8 @@
   "homepage": "https://github.com/sclavijosuero/cypress-schema-validator#readme",
   "devDependencies": {
     "@bahmutov/cy-api": "^2.2.6",
-    "cypress": "^13.17.0"
+    "cypress": "^13.17.0",
+    "zod": "^3.25.46"
   },
   "dependencies": {
     "core-ajv-schema-validator": "^1.0.0",
