@@ -1,6 +1,6 @@
 # cypress-schema-validator
 
-A Cypress plugin for API schema validation. It leverages the core-ajv-schema-validator powered by the AJV package (for plain JSON schemas, Swagger documents, and OpenAPI schemas) as well as the core-ajv-schema-validator powered by the ZOD package (for Zod schemas).
+A Cypress plugin for API schema validation. It leverages the core-ajv-schema-validator powered by the AJV package (for plain JSON schemas, Swagger documents, and OpenAPI schemas) as well as the core-zod-schema-validator powered by the ZOD package (for Zod schemas).
 
 > 🚀🚀🚀 **IMPORTANT NOTE: This plugin `cypress-schema-validator` replaces the previously existing `cypress-ajv-schema-validator`, maintaining complete backward compatibility while extending the API to support Zod schema validation capabilities.** 
 
@@ -280,7 +280,7 @@ When a test passes, the Cypress log will show the message: "✔️ **PASSED - TH
 
 When a test fails, the Cypress log will show the message: "❌ **FAILED - THE RESPONSE BODY IS NOT VALID AGAINST THE SCHEMA**"; indicating the total number of errors: _(Number of schema errors: N_).
 
-Also, the Cypress log will show an entry for each of the individual schema validation errors as provided by Ajv. The errors that correspond to missing fields in the data validated are marked with the symbol ❌, and the rest of the errors like with the symbol ⚠️.
+Also, the Cypress log will show an entry for each of the individual schema validation errors as provided by AJV or ZOD. The errors that correspond to missing fields in the data validated are marked with the symbol ❌, and the rest of the errors like with the symbol ⚠️.
 
 ![Test Failed Overview](images/error11_a.png) 
 
@@ -288,8 +288,9 @@ Also, the Cypress log will show an entry for each of the individual schema valid
 
 If you open the Console in the browser DevTools, and click on the summary line for the schema validation error in the Cypress log, the console will display detailed information about all the errors. This includes:
 
-- The total number of errors
-- The full list of errors as provided by the Ajv.
+- Message containing the schema analysis results.
+- The total number of errors.
+- Complete list of errors provided by the core Schema Validator (AJV or ZOD).
 - A user-friendly view of the mismatches between the validated data and the JSON schema, highlighting where each validation error occurred and the exact reason for the mismatch.
 
 ![Test Failed Details](images/error12_a.png) 
@@ -298,13 +299,9 @@ If you open the Console in the browser DevTools, and click on the summary line f
 
 When there are more than 10 schema validation errors, the Cypress log will show only the first 10 and, at the end of the list, an additional line indicating "**...and _N_ more errors.**".
 
+If you click on the "**...and N more errors.**" line in the Cypress log, the browser console will show additional details for the errors grouped under that entry as provided by the core Schema Validator (AJV or ZOD).
+
 ![Test Failed Many Errors](images/error21_a.png) 
-
-##### More Errors in the Console
-
-When clicking on the "**...and N more errors.**" line in the Cypress log, the browser console will show additional details for the errors grouped under that entry as provided by Ajv.
-
-![More Errors in Console](images/error23_a.png) 
 
 ### Integration with other Cypress API Plugins
 
@@ -329,11 +326,11 @@ Similarly, when the Cypress environment variable `enableMismatchesOnUI` is set t
 
 ### Results for AJV Schema Validation VS zod Schema Validation
 
-One of the significant advantages of using this plugin is that it presents results to the user in a consistent format, regardless of whether the AJV Schema Validator or Zod Validator is used. This ensures that if the plugin's user decides to switch between validators, the results remain uniform and consistent.
+One of the significant advantages of using this plugin is that it presents results to the user in a consistent format, regardless of whether the AJV Schema Validator or ZOD Validator is used. This ensures that if the plugin's user decides to switch between validators, the results remain uniform and consistent.
 
 This provides a layer of abstraction that manages how the results are presented, allowing the user to focus solely on the results themselves.
 
-If we compare the results presented by the cypress-schema-plugin for AJV validation and Zod validation side by side, we can observe that the data mismatch results displayed in the Cypress UI, as well as the nested tree view of the validated data, remain consistent. This ensures an identical user experience when identifying schema issues.
+If we compare the results presented by the cypress-schema-plugin for AJV validation and ZOD validation side by side, we can observe that the data mismatch results displayed in the Cypress UI, as well as the nested tree view of the validated data, remain consistent. This ensures an identical user experience when identifying schema issues.
 
 The only slight differences are the schema error properties presented in the Cypress Log and the console, as these are provided by the specific validator. This allows users to inspect the results in the original validator format, if they are more familiar with it.
 

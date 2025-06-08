@@ -21,7 +21,8 @@ export default class StyleHandler {
      * @returns {string} The style name.
      */
     static getStyleName = (hexColor = '#FFFFFF', fontSize) => {
-        const styleName = `colorLog${hexColor.replace("#", "-") + fontSize ? `-${fontSize}` : ''}`
+        // const styleName = `colorLog${hexColor.replace("#", "-")}` + (fontSize ? `-${fontSize}` : '')
+        const styleName = `colorLog${hexColor.replace("#", "-")}`
 
         if (!StyleHandler._cachedStyles.has(styleName)) {
             StyleHandler._createStyle(styleName, hexColor, fontSize) // Create style element in the document
