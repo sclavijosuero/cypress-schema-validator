@@ -1,4 +1,4 @@
-# Cypress-ajv-schema-validator Videos
+# Cypress-schema-validator Videos
 
 ## Integration with bahmutov/cy-api Plugin
 
