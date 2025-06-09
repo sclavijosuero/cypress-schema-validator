@@ -29,7 +29,7 @@ A Cypress plugin for API schema validation. It leverages the core-ajv-schema-val
 
 ✔️ Output the schema errors in the terminal when executing in `run` mode.
 
-✔️ Allow custom styles (icons and text colors) to match the user's preferences for distinguishing schema errors
+✔️ Allow custom styles (icons and text colors) to match the user's preferences for distinguishing schema errors.
 
 ✔️ Environment variable `disableSchemaValidation` to disable schema validation in your tests.
 
@@ -58,7 +58,7 @@ For Typescript projects also:
 ##  INSTALLATION 
 
 ```sh
-npm install -D .cypress-schema-validator
+npm install -D cypress-schema-validator
 ```
 
 ## CONFIGURATION
@@ -66,7 +66,7 @@ npm install -D .cypress-schema-validator
 - Add the following lines either to your `cypress/support/commands.js` to include the custom command and function globally, or directly in the test file that will host the schema validation tests:
 
   ```js
-  import '.cypress-schema-validator';
+  import 'cypress-schema-validator';
   ```
 
 - To **disable schema validation** even when the `cy.validateSchema()` command is present in the test, set the Cypress environment variable `disableSchemaValidation` to `true`. By default, schema validation is enabled.
@@ -109,6 +109,8 @@ The `cypress-schema-validator` plugin integrates Zod by enabling developers to s
 
 ## API REFERENCE
 
+&nbsp; 
+
 ### `cy.validateSchema(schema[, path[, issuesStyles]])` (and alias `cy.validateSchemaAjv(schema[, path[, issuesStyles]])`)
 
 It validates the JSON data in the response body against the provided **Plain JSON schema**, **OpenAPI** and **Swagger** document format using the **AJV Schema Validator**.
@@ -139,7 +141,9 @@ It is expected to be chained to an API response (from a `cy.request()` or `cy.ap
 
 - `Error`: If any of the required parameters are missing or if the schema or schema definition is not found.
 
-Example providing a Plain JSON schema:
+&nbsp; 
+
+Example providing a **_Plain JSON schema_**:
 
 ```js
 cy.request('GET', 'https://awesome.api.com/users/1')
@@ -151,7 +155,7 @@ cy.request('GET', 'https://awesome.api.com/users/1')
   .validateSchemaAjv(schema);
 ```
 
-Example providing a Plain JSON schema and custom `issuesStyles`:
+Example providing a **_Plain JSON schema and custom `issuesStyles`_**:
 
 ```js
 const issuesStylesOverride = {
@@ -171,7 +175,7 @@ cy.request('GET', 'https://awesome.api.com/users/1')
   .validateSchemaAjv(schema, undefined, issuesStylesOverride);
 ```
 
-Example providing an OpenAPI 3.0.1 or Swagger 2.0 schema documents and path to the schema definition:
+Example providing an **_OpenAPI 3.0.1 or Swagger 2.0 schema documents and path to the schema definition_**:
 
 ```js
 cy.request('GET', 'https://awesome.api.com/users/1')
@@ -183,7 +187,7 @@ cy.request('GET', 'https://awesome.api.com/users/1')
   .validateSchemaAjv(schema, { endpoint: '/users/{id}', method: 'GET', status: 200 });
 ```
 
-Example providing an OpenAPI 3.0.1 or Swagger 2.0 schema documents, path to the schema definition and custom `issuesStyles`:
+Example providing an **_OpenAPI 3.0.1 or Swagger 2.0 schema documents, path to the schema definition and custom `issuesStyles`_**:
 
 ```js
 const issuesStylesOverride = {
@@ -209,6 +213,7 @@ Using the path defined by `{ endpoint, method, status }`, the plugin will automa
 
 ![Path to the schema definition](images/path_a.png) 
 
+&nbsp; 
 
 ### `cy.validateSchemaZod(schema[, issuesStyles])`
 
@@ -235,14 +240,16 @@ It is expected to be chained to an API response (from a `cy.request()` or `cy.ap
 
 - `Error`: If any of the required parameters are missing or if the schema or schema definition is not found.
 
-Example providing a Zod schema:
+&nbsp; 
+
+Example providing a **_Zod schema_**:
 
 ```js
 cy.request('GET', 'https://awesome.api.com/users/1')
   .validateSchemaZod(schema);
 ```
 
-Example providing a Zod schema nd custom `issuesStyles`:
+Example providing a **_Zod schema nd custom `issuesStyles`_**:
 
 ```js
 const issuesStylesOverride = {
