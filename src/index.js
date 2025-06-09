@@ -24,6 +24,8 @@ const issuesStylesDefault = {
 
 const colorDisabledValidation = '#e0e030'
 
+const responseValid  = `**THE RESPONSE BODY IS VALID AGAINST THE SCHEMA.**`
+const responseInvalid = `**THE RESPONSE BODY IS NOT VALID AGAINST THE SCHEMA ⛔ (Number of schema errors: $NUM_ERRORS$) ⛔**`
 const warningDisableSchemaValidation = `⚠️ API SCHEMA VALIDATION DISABLED ⚠️`
 const msgDisableSchemaValidation = '- The Cypress environment variable "disableSchemaValidation" has been set to true.'
 const errorNoValidApiResponse = 'The element chained to the cy.validateSchema() command is expected to be an API response!'
@@ -191,12 +193,17 @@ const _validateSchema = (response, validatorType, schema, path, issuesStyles) =>
 const _logValidationResult = (data, validationResults, issuesStyles, maxErrorsToShow = 10) => {
 
     let { errors, dataMismatches } = validationResults
+    // Log in the console the test path
+    console.log ('SCHEMA VALIDATION FOR TEST: ', Cypress.currentTest.titlePath.join(' > '))
 
     if (!errors) {
         // PASSED
 
-        // Show in Cypress Log an message saying that the schema validation passed
-        cy.colorLog(`**THE RESPONSE BODY IS VALID AGAINST THE SCHEMA.**`,
+        // Log in the Console 
+        console.log(`  ${iconPassed} PASSED - ${responseValid}`)
+
+        // Log in Cypress Log
+        cy.colorLog(responseValid,
             '#66d966',
             { displayName: `${iconPassed} PASSED -` },
             '14px'
@@ -269,7 +276,7 @@ const _logValidationResult = (data, validationResults, issuesStyles, maxErrorsTo
         //   - Total number of errors
         //   - Full list of errors as provided by AJV
         //   - User friendly representation of the mismatches in the data ❤️
-        cy.colorLog(`**THE RESPONSE BODY IS NOT VALID AGAINST THE SCHEMA ⛔ (Number of schema errors: ${errors.length}) ⛔**`,
+        cy.colorLog(responseInvalid.replace('$NUM_ERRORS$', errors.length),
             '#e34040',
             { displayName: `${iconFailed} FAILED -`, info: { number_of_schema_errors: errors.length, schema_errors: errors, data_mismatches: dataMismatches } },
             '14px'
@@ -286,7 +293,7 @@ const _logValidationResult = (data, validationResults, issuesStyles, maxErrorsTo
             errorsToShow = errors
         }
 
-        // Show in Cypress Log the first 'maxErrorsToShow' as provided by AJV
+        // Show in the CYPRESS LOG the first 'maxErrorsToShow' as provided by AJV or ZOD
         errorsToShow.forEach(error => {
             const existError =  error.keyword === 'required' || error.message === "Required"
             const iconError = existError ? iconPropertyMissing : iconPropertyError
@@ -297,8 +304,7 @@ const _logValidationResult = (data, validationResults, issuesStyles, maxErrorsTo
                 { displayName: iconError, info: { schema_error: error } }
             )
         })
-
-        // Show in Cypress Log the rest of errors if there are more than 'maxErrorsToShow' as provided by AJV
+        // Show in the CYPRESS LOG Log the rest of errors if there are more than 'maxErrorsToShow' as provided by AJV
         if (rest_of_errors) {
             cy.colorLog(`...and ${errors.length - maxErrorsToShow} more errors.`,
                 colorPropertyMissing,
@@ -306,10 +312,18 @@ const _logValidationResult = (data, validationResults, issuesStyles, maxErrorsTo
             )
         }
 
+        // Log in the CONSOLE the full list of errors
+        const msgError = `${iconFailed} FAILED - ${responseInvalid.replace('$NUM_ERRORS$', errors.length)}`
+        console.log(`  ${msgError}`)
+        // errors.map(e => JSON.stringify(e)).join('\n')
+
         // Throw an error to fail the test
         cy.then(() => {
-            console.log(errorResponseBodyAgainstSchema)
-            throw new Error(errorResponseBodyAgainstSchema)
+            const exceptionMsg = Cypress.config('isInteractive') ?
+                errorResponseBodyAgainstSchema :
+                `${msgError}\n` + errors.map(e => JSON.stringify(e)).join('\n')
+
+            throw new Error(exceptionMsg)
         })
     }
 }

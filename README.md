@@ -38,6 +38,8 @@ For Typescript projects also:
    -  Full list of schema errors as provided by **Ajv** or **Zod** depending on the selected command.
    -  A nested tree view of the validated data, clearly indicating the errors and where they occurred in an easy-to-understand format.
 
+✔️ Output the schema errors in the terminal when executing in `run` mode.
+
 ✔️ Environment variable `disableSchemaValidation` to disable schema validation in your tests.
 
 ✔️ Fully integrates with **Gleb Bahmutov**'s [@bahmutov/cy-api](https://github.com/bahmutov/cy-api) and **Filip Hric**'s [cypress-plugin-api](https://github.com/filiphric/cypress-plugin-api) plugins, allowing JSON schema validations to be performed immediately after the `cy.api()` command.
@@ -302,6 +304,14 @@ When there are more than 10 schema validation errors, the Cypress log will show 
 If you click on the "**...and N more errors.**" line in the Cypress log, the browser console will show additional details for the errors grouped under that entry as provided by the core Schema Validator (AJV or ZOD).
 
 ![Test Failed Many Errors](images/error21_a.png) 
+
+
+### Schema errors in the Terminal when executing in `run` mode
+
+In case the tests are executed in run mode and there are schema errors, these will be displayed in the Terminal as provided by the AJV or ZOD validators.
+
+![Terminal Schema Errors](images/terminal_errors.png) 
+
 
 ### Integration with other Cypress API Plugins
 
