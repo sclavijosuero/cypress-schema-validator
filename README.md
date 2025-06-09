@@ -46,6 +46,52 @@ A Cypress plugin for API schema validation. It leverages the core-ajv-schema-val
 
 &nbsp; 
 
+- [cypress-schema-validator](#cypress-schema-validator)
+  - [MAIN FEATURES](#main-features)
+  - [COMPATIBILITY](#compatibility)
+  - [INSTALLATION](#installation)
+  - [CONFIGURATION](#configuration)
+  - [ABOUT JSON SCHEMAS AND SCHEMA VALIDATORS](#about-json-schemas-and-schema-validators)
+    - [JSON Schema](#json-schema)
+    - [OpenAPI 3.x and Swagger 2.0 Schema Documents](#openapi-3x-and-swagger-20-schema-documents)
+    - [Ajv JSON Schema Validator](#ajv-json-schema-validator)
+    - [Zod Schema Validator](#zod-schema-validator)
+  - [API REFERENCE](#api-reference)
+    - [`cy.validateSchema(schema[, path[, issuesStyles]])` (and alias `cy.validateSchemaAjv(schema[, path[, issuesStyles]])`)](#cyvalidateschemaschema-path-issuesstyles-and-alias-cyvalidateschemaajvschema-path-issuesstyles)
+      - [Parameters](#parameters)
+      - [Returns](#returns)
+      - [Throws](#throws)
+      - [Path Parameter](#path-parameter)
+    - [`cy.validateSchemaZod(schema[, issuesStyles])`](#cyvalidateschemazodschema-issuesstyles)
+      - [Parameters](#parameters-1)
+      - [Returns](#returns-1)
+      - [Throws](#throws-1)
+  - [USAGE EXAMPLES](#usage-examples)
+    - [Examples For AJV Schema Validation USAGE-EXAMPLES-AJV.md.](#examples-for-ajv-schema-validation-usage-examples-ajvmd)
+    - [Examples For ZOD Schema Validation USAGE-EXAMPLES-ZOD.md.](#examples-for-zod-schema-validation-usage-examples-zodmd)
+  - [SCHEMA VALIDATION RESULTS](#schema-validation-results)
+    - [Results Outcome (Passed/Failed)](#results-outcome-passedfailed)
+      - [Test Passed ✔️](#test-passed-️)
+      - [Test Failed ❌](#test-failed-)
+        - [Detailed Error View in the Console](#detailed-error-view-in-the-console)
+        - [Test Failed with More than 10 Errors ➕](#test-failed-with-more-than-10-errors-)
+        - [Schema errors in the Terminal when executing in `run` mode](#schema-errors-in-the-terminal-when-executing-in-run-mode)
+    - [Integration with other Cypress API Plugins](#integration-with-other-cypress-api-plugins)
+      - [Integration with Gleb Bahmutov's `@bahmutov/cy-api` Plugin](#integration-with-gleb-bahmutovs-bahmutovcy-api-plugin)
+      - [Integration with Filip Hric's `cypress-plugin-api`](#integration-with-filip-hrics-cypress-plugin-api)
+    - [Custom Styles for Validation Errors](#custom-styles-for-validation-errors)
+    - [Results for AJV Schema Validation vs ZOD Schema Validation](#results-for-ajv-schema-validation-vs-zod-schema-validation)
+  - [DISABLE JSON SCHEMA VALIDATION IN YOUR TESTS](#disable-json-schema-validation-in-your-tests)
+  - [LICENSE](#license)
+  - [CONTRIBUTING](#contributing)
+  - [CHANGELOG](#changelog)
+    - [\[1.0.0\]](#100)
+    - [\[cypress-ajv-schema-validator 2.0.1\]](#cypress-ajv-schema-validator-201)
+  - [EXTERNAL REFERENCES](#external-references)
+    - [For cypress-ajv-schema-validator (predecessor plugin)](#for-cypress-ajv-schema-validator-predecessor-plugin)
+
+&nbsp; 
+
 ## COMPATIBILITY
 
 - Cypress 12.0.0 or higher
