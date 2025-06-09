@@ -46,6 +46,8 @@ A Cypress plugin for API schema validation. It leverages the core-ajv-schema-val
 
 &nbsp; 
 
+## TABLE OF CONTENTS
+
 - [cypress-schema-validator](#cypress-schema-validator)
   - [MAIN FEATURES](#main-features)
   - [COMPATIBILITY](#compatibility)
