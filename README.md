@@ -27,6 +27,8 @@ A Cypress plugin for API schema validation. It leverages the core-ajv-schema-val
    -  Full list of schema errors as provided by **Ajv** or **Zod** depending on the selected command.
    -  A nested tree view of the validated data, clearly indicating the errors and where they occurred in an easy-to-understand format.
 
+✔️ Presents results to the user in a consistent format, regardless of whether the AJV Schema Validator or ZOD Validator is used.
+
 ✔️ Output the schema errors in the terminal when executing in `run` mode.
 
 ✔️ Allow custom styles (icons and text colors) to match the user's preferences for distinguishing schema errors.
@@ -34,7 +36,7 @@ A Cypress plugin for API schema validation. It leverages the core-ajv-schema-val
 ✔️ Environment variable `disableSchemaValidation` to disable schema validation in your tests.
 
 ✔️ Fully integrates with **Gleb Bahmutov**'s [@bahmutov/cy-api](https://github.com/bahmutov/cy-api) and **Filip Hric**'s [cypress-plugin-api](https://github.com/filiphric/cypress-plugin-api) plugins, allowing JSON schema validations to be performed immediately after the `cy.api()` command.
-   - With the environment variable `enableMismatchesOnUI` enabled, schema errors are displayed directly in the user interface of these plugins for enhanced visibility.
+   - With the environment variable **`enableMismatchesOnUI`** enabled, schema errors are displayed directly in the user interface of these plugins for enhanced visibility.
 
 > ⭐⭐⭐⭐⭐ Example usage with **@bahmutov/cy-api** and **cypress-plugin-api** plugins:
 > 
@@ -71,7 +73,7 @@ npm install -D cypress-schema-validator
 
 - To **disable schema validation** even when the `cy.validateSchema()` command is present in the test, set the Cypress environment variable `disableSchemaValidation` to `true`. By default, schema validation is enabled.
 
-- To **enable the display of schema errors** directly in the user interfaces of the `@bahmutov/cy-api` and `cypress-plugin-api` plugins, set the Cypress environment variable `enableMismatchesOnUI` to `true`. By default, this feature is disabled.
+- To **enable the display of schema errors** directly in the user interfaces of the `@bahmutov/cy-api` and `cypress-plugin-api` plugins, set the Cypress environment variable **`enableMismatchesOnUI`** to **`true`**. By default, this feature is disabled.
 
 &nbsp; 
 
@@ -342,7 +344,7 @@ In case the tests are executed in run mode and there are schema errors, these wi
 
 #### Integration with Gleb Bahmutov's `@bahmutov/cy-api` Plugin
 
-When the Cypress environment variable `enableMismatchesOnUI` is set to `true`, and you have imported the `@bahmutov/cy-api` plugin into your `cypress/support/commands.js` or test file, schema validation mismatches will be displayed directly in the plugin's UI in a user-friendly format.
+When the Cypress environment variable **`enableMismatchesOnUI`** is set to **`true`**, and you have imported the `@bahmutov/cy-api` plugin into your `cypress/support/commands.js` or test file, schema validation mismatches will be displayed directly in the plugin's UI in a user-friendly format.
 
 ![Plugin @bahmutov/cy-api](images/cy_api_1_a.png) 
 
@@ -350,7 +352,7 @@ When the Cypress environment variable `enableMismatchesOnUI` is set to `true`, a
 
 #### Integration with Filip Hric's `cypress-plugin-api`
 
-Similarly, when the Cypress environment variable `enableMismatchesOnUI` is set to `true`, and the `cypress-plugin-api` plugin is imported into your `cypress/support/commands.js` or test file, schema violations will be shown in the plugin's UI.
+Similarly, when the Cypress environment variable **`enableMismatchesOnUI`** is set to **`true`**, and the `cypress-plugin-api` plugin is imported into your `cypress/support/commands.js` or test file, schema violations will be shown in the plugin's UI.
 
 ![Plugin cypress-plugin-api](images/cy_api_2_a.png) 
 
