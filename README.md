@@ -29,6 +29,8 @@ A Cypress plugin for API schema validation. It leverages the core-ajv-schema-val
 
 ✔️ Output the schema errors in the terminal when executing in `run` mode.
 
+✔️ Allow custom styles (icons and text colors) to match the user's preferences for distinguishing schema errors
+
 ✔️ Environment variable `disableSchemaValidation` to disable schema validation in your tests.
 
 ✔️ Fully integrates with **Gleb Bahmutov**'s [@bahmutov/cy-api](https://github.com/bahmutov/cy-api) and **Filip Hric**'s [cypress-plugin-api](https://github.com/filiphric/cypress-plugin-api) plugins, allowing JSON schema validations to be performed immediately after the `cy.api()` command.
@@ -152,13 +154,21 @@ cy.request('GET', 'https://awesome.api.com/users/1')
 Example providing a Plain JSON schema and custom `issuesStyles`:
 
 ```js
+const issuesStylesOverride = {
+  iconPropertyError: '🟦', colorPropertyError: '#5178eb',
+  iconPropertyMissing: '🟪', colorPropertyMissing: '#800080'
+}
 cy.request('GET', 'https://awesome.api.com/users/1')
-  .validateSchema(schema, undefined, customIssuesStyle);
+  .validateSchema(schema, undefined, issuesStylesOverride);
 ```
 or
 ```js
+const issuesStylesOverride = {
+  iconPropertyError: '🟦', colorPropertyError: '#5178eb',
+  iconPropertyMissing: '🟪', colorPropertyMissing: '#800080'
+}
 cy.request('GET', 'https://awesome.api.com/users/1')
-  .validateSchemaAjv(schema, undefined, customIssuesStyle);
+  .validateSchemaAjv(schema, undefined, issuesStylesOverride);
 ```
 
 Example providing an OpenAPI 3.0.1 or Swagger 2.0 schema documents and path to the schema definition:
@@ -176,14 +186,24 @@ cy.request('GET', 'https://awesome.api.com/users/1')
 Example providing an OpenAPI 3.0.1 or Swagger 2.0 schema documents, path to the schema definition and custom `issuesStyles`:
 
 ```js
+const issuesStylesOverride = {
+  iconPropertyError: '🟦', colorPropertyError: '#5178eb',
+  iconPropertyMissing: '🟪', colorPropertyMissing: '#800080'
+}
 cy.request('GET', 'https://awesome.api.com/users/1')
-  .validateSchema(schema, { endpoint: '/users/{id}', method: 'GET', status: 200 }, customIssuesStyle);
+  .validateSchema(schema, { endpoint: '/users/{id}', method: 'GET', status: 200 }, issuesStylesOverride);
 ```
 or
 ```js
+const issuesStylesOverride = {
+  iconPropertyError: '🟦', colorPropertyError: '#5178eb',
+  iconPropertyMissing: '🟪', colorPropertyMissing: '#800080'
+}
 cy.request('GET', 'https://awesome.api.com/users/1')
-  .validateSchemaAjv(schema, { endpoint: '/users/{id}', method: 'GET', status: 200 }, customIssuesStyle);
+  .validateSchemaAjv(schema, { endpoint: '/users/{id}', method: 'GET', status: 200 }, issuesStylesOverride);
 ```
+
+#### Path Parameter
 
 Using the path defined by `{ endpoint, method, status }`, the plugin will automatically take the schema `$ref` for that definition, find it in the `components` section, and use it in the schema validation.
 
@@ -202,9 +222,10 @@ It is expected to be chained to an API response (from a `cy.request()` or `cy.ap
 - **`issuesStyles`** (object, optional)
    An object with the icons used to flag the schema issues. If not provided, it will use the default icons defined in the plugin `core-zod-schema-validator`.
    Includes the following properties:
-  - **`iconPropertyError`** (string, optional): The icon used to flag type errors in the data.
-  - **`iconPropertyMissing`** (string, optional): The icon used to flag type errors in the data.
-
+  - **`iconPropertyError`** (string, optional): The icon used to flag type errors in the data. Support emojis.
+  - **`iconPropertyMissing`** (string, optional): The icon used to flag type errors in the data. Support emojis.
+  - **`colorPropertyError`** (string, optional): The HEX color used to flag the property error.
+  - **`colorPropertyMissing`** (string, optional): The HEX color used to flag the missing property.
 
 #### Returns
 
@@ -224,8 +245,12 @@ cy.request('GET', 'https://awesome.api.com/users/1')
 Example providing a Zod schema nd custom `issuesStyles`:
 
 ```js
+const issuesStylesOverride = {
+  iconPropertyError: '🟦', colorPropertyError: '#5178eb',
+  iconPropertyMissing: '🟪', colorPropertyMissing: '#800080'
+}
 cy.request('GET', 'https://awesome.api.com/users/1')
-  .validateSchemaZod(schema, customIssuesStyle);
+  .validateSchemaZod(schema, issuesStylesOverride);
 ```
 
 &nbsp; 
@@ -259,9 +284,9 @@ Includes detailed examples for the use cases:
   - `.validateSchemaAZod()` command with **`cy.api()` from Plugin `@bahmutov/cy-api` or `cypress-plugin-api` plugins**.
 
 
-## VALIDATION RESULTS
+## SCHEMA VALIDATION RESULTS
 
-### Regarding Results Outcome (Passed/Failed)
+### Results Outcome (Passed/Failed)
 
 Here are some screenshots of schema validation tests run in Cypress for the different test results.
 
@@ -290,7 +315,7 @@ If you open the Console in the browser DevTools, and click on the summary line f
 
 ![Test Failed Details](images/error12_a.png) 
 
-#### Test Failed with More than 10 Errors ➕
+##### Test Failed with More than 10 Errors ➕
 
 When there are more than 10 schema validation errors, the Cypress log will show only the first 10 and, at the end of the list, an additional line indicating "**...and _N_ more errors.**".
 
@@ -299,7 +324,7 @@ If you click on the "**...and N more errors.**" line in the Cypress log, the bro
 ![Test Failed Many Errors](images/error21_a.png) 
 
 
-### Schema errors in the Terminal when executing in `run` mode
+##### Schema errors in the Terminal when executing in `run` mode
 
 In case the tests are executed in run mode and there are schema errors, these will be displayed in the Terminal as provided by the AJV or ZOD validators.
 
@@ -314,8 +339,6 @@ When the Cypress environment variable `enableMismatchesOnUI` is set to `true`, a
 
 ![Plugin @bahmutov/cy-api](images/cy_api_1_a.png) 
 
-It will follow the the same color legend as in the Cypress Log.
-
 ![Plugin @bahmutov/cy-api](images/cy_api_1_details_a.png) 
 
 #### Integration with Filip Hric's `cypress-plugin-api`
@@ -327,7 +350,16 @@ Similarly, when the Cypress environment variable `enableMismatchesOnUI` is set t
 ![Plugin @bahmutov/cy-api](images/cy_api_2_details_a.png) 
 
 
-### Results for AJV Schema Validation VS zod Schema Validation
+### Custom Styles for Validation Errors
+
+The **Custom Styles for Validation Errors** feature allows users to personalize the display of schema validation issues for enhanced clarity. By specifying custom styles through the issuesStyles object, users can customize icons and HEX color codes to flag specific validation errors visually.
+
+These customizable styles ensure flexibility and improved error identification suited to individual preferences.
+
+![Custom Styles Validation Errors](images/custom-errors.png)
+
+
+### Results for AJV Schema Validation vs ZOD Schema Validation
 
 One of the significant advantages of using this plugin is that it presents results to the user in a consistent format, regardless of whether the AJV Schema Validator or ZOD Validator is used. This ensures that if the plugin's user decides to switch between validators, the results remain uniform and consistent.
 
@@ -391,7 +423,7 @@ Thank you for your support!
 
 ## EXTERNAL REFERENCES
 
-### For cypress-ajv-schema-validator (the predecessor plugin)
+### For cypress-ajv-schema-validator (predecessor plugin)
 
 - [json-schema.org](https://json-schema.org/ "https://json-schema.org/") - Website [JSON Schema Tooling](https://json-schema.org/tools?query=&sortBy=name&sortOrder=ascending&groupBy=toolingTypes&licenses=&languages=&drafts=&toolingTypes=#json-schema-tooling "JSON Schema Tooling")
 

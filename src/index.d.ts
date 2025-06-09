@@ -15,8 +15,8 @@ declare global {
        * @param {string} [path.method] - The HTTP method. If not provided, it will use 'GET'.
        * @param {integer} [path.status] - The response status code. If not provided, it will use 200.
        * @param {object} [issuesStyles] - An object with the icons and HEX colors used to flag the issues.
-       * @param {string} [issuesStyles.iconPropertyError] - The icon used to flag the property error.
-       * @param {string} [issuesStyles.iconPropertyMissing] - The icon used to flag the missing property.
+       * @param {string} [issuesStyles.iconPropertyError] - The icon used to flag the property error. Support emojis.
+       * @param {string} [issuesStyles.iconPropertyMissing] - The icon used to flag the missing property. Support emojis.
        * @param {string} [issuesStyles.colorPropertyError] - The HEX color used to flag the property error.
        * @param {string} [issuesStyles.colorPropertyMissing] - The HEX color used to flag the missing property.
        *  
@@ -89,8 +89,8 @@ declare global {
        * @param {string} [path.method] - The HTTP method. If not provided, it will use 'GET'.
        * @param {integer} [path.status] - The response status code. If not provided, it will use 200.
        * @param {object} [issuesStyles] - An object with the icons and HEX colors used to flag the issues.
-       * @param {string} [issuesStyles.iconPropertyError] - The icon used to flag the property error.
-       * @param {string} [issuesStyles.iconPropertyMissing] - The icon used to flag the missing property.
+       * @param {string} [issuesStyles.iconPropertyError] - The icon used to flag the property error. Support emojis.
+       * @param {string} [issuesStyles.iconPropertyMissing] - The icon used to flag the missing property. Support emojis.
        * @param {string} [issuesStyles.colorPropertyError] - The HEX color used to flag the property error.
        * @param {string} [issuesStyles.colorPropertyMissing] - The HEX color used to flag the missing property.
        * @returns {Cypress.Chainable} - The response object wrapped in a Cypress.Chainable.
@@ -156,8 +156,8 @@ declare global {
        * @param {object} schema - The schema to validate against. Supported formats are plain JSON schema, Swagger, and OpenAPI documents. See https://ajv.js.org/json-schema.html for more information.
        * @param {integer} [path.status] - The response status code. If not provided, it will use 200.
        * @param {object} [issuesStyles] - An object with the icons and HEX colors used to flag the issues.
-       * @param {string} [issuesStyles.iconPropertyError] - The icon used to flag the property error.
-       * @param {string} [issuesStyles.iconPropertyMissing] - The icon used to flag the missing property.
+       * @param {string} [issuesStyles.iconPropertyError] - The icon used to flag the property error. Support emojis.
+       * @param {string} [issuesStyles.iconPropertyMissing] - The icon used to flag the missing property. Support emojis.
        * @param {string} [issuesStyles.colorPropertyError] - The HEX color used to flag the property error.
        * @param {string} [issuesStyles.colorPropertyMissing] - The HEX color used to flag the missing property.
        *  
