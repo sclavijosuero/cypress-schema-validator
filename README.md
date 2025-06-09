@@ -7,17 +7,6 @@ A Cypress plugin for API schema validation. It leverages the core-ajv-schema-val
 ![Overview](videos/overview.gif) 
 
 
-## COMPATIBILITY
-
-- Cypress 12.0.0 or higher
-- Ajv 8.16.0 or higher
-- ajv-formats 3.0.1 or higher
-  
-For Typescript projects also:
-- TypeScript 4.5+
-- You must enable strict mode in your `tsconfig.json`. This is a best practice for all TypeScript projects.
-
-
 ## MAIN FEATURES
 
 ✔️ Cypress command **`cy.validateSchema()`** (and alias **`cy.validateSchemaAjv()`**) performs a JSON Schema Validation and reports errors in the responses of network requests made with `cy.request()`.
@@ -53,6 +42,37 @@ For Typescript projects also:
 
 &nbsp; 
 
+## COMPATIBILITY
+
+- Cypress 12.0.0 or higher
+- Ajv 8.16.0 or higher
+- ajv-formats 3.0.1 or higher
+  
+For Typescript projects also:
+- TypeScript 4.5+
+- You must enable strict mode in your `tsconfig.json`. This is a best practice for all TypeScript projects.
+
+
+##  INSTALLATION 
+
+```sh
+npm install -D .cypress-schema-validator
+```
+
+## CONFIGURATION
+
+- Add the following lines either to your `cypress/support/commands.js` to include the custom command and function globally, or directly in the test file that will host the schema validation tests:
+
+  ```js
+  import '.cypress-schema-validator';
+  ```
+
+- To **disable schema validation** even when the `cy.validateSchema()` command is present in the test, set the Cypress environment variable `disableSchemaValidation` to `true`. By default, schema validation is enabled.
+
+- To **enable the display of schema errors** directly in the user interfaces of the `@bahmutov/cy-api` and `cypress-plugin-api` plugins, set the Cypress environment variable `enableMismatchesOnUI` to `true`. By default, this feature is disabled.
+
+&nbsp; 
+
 ## ABOUT JSON SCHEMAS AND SCHEMA VALIDATORS
 
 ### JSON Schema
@@ -82,33 +102,6 @@ Zod is a TypeScript-first schema declaration and validation library that allows 
 It was chosen as the core engine of the `core-zod-schema-validator` plugin due to its developer-friendly nature, versatility, and seamless integration into modern TypeScript workflows. Its intuitive API, extensive validation capabilities, and active maintenance make it a powerful tool for schema validation. For more information on Zod, visit the [Zod official website](https://zod.dev/).
 
 The `cypress-schema-validator` plugin integrates Zod by enabling developers to supply Zod schemas directly for validation. You define the schema for the service and endpoint you want to validate, and the plugin ensures that the API responses adhere to the specified structure.
-
-&nbsp; 
-
-## Compatibility
-
-- Cypress 12.0.0 or higher
-- Ajv 8.16.0 or higher
-- ajv-formats 3.0.1 or higher
-
-
-##  INSTALLATION 
-
-```sh
-npm install -D .cypress-schema-validator
-```
-
-## CONFIGURATION
-
-- Add the following lines either to your `cypress/support/commands.js` to include the custom command and function globally, or directly in the test file that will host the schema validation tests:
-
-  ```js
-  import '.cypress-schema-validator';
-  ```
-
-- To **disable schema validation** even when the `cy.validateSchema()` command is present in the test, set the Cypress environment variable `disableSchemaValidation` to `true`. By default, schema validation is enabled.
-
-- To **enable the display of schema errors** directly in the user interfaces of the `@bahmutov/cy-api` and `cypress-plugin-api` plugins, set the Cypress environment variable `enableMismatchesOnUI` to `true`. By default, this feature is disabled.
 
 &nbsp; 
 
