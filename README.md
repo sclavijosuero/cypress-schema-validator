@@ -33,7 +33,7 @@ A Cypress plugin for API schema validation. It leverages the core-ajv-schema-val
 
 ✔️ Allow custom styles (icons and text colors) to match the user's preferences for distinguishing schema errors.
 
-✔️ Environment variable `disableSchemaValidation` to disable schema validation in your tests.
+✔️ Environment variable **`disableSchemaValidation`** to disable schema validation in your tests.
 
 ✔️ Fully integrates with **Gleb Bahmutov**'s [@bahmutov/cy-api](https://github.com/bahmutov/cy-api) and **Filip Hric**'s [cypress-plugin-api](https://github.com/filiphric/cypress-plugin-api) plugins, allowing JSON schema validations to be performed immediately after the `cy.api()` command.
    - With the environment variable **`enableMismatchesOnUI`** enabled, schema errors are displayed directly in the user interface of these plugins for enhanced visibility.
@@ -71,7 +71,7 @@ npm install -D cypress-schema-validator
   import 'cypress-schema-validator';
   ```
 
-- To **disable schema validation** even when the `cy.validateSchema()` command is present in the test, set the Cypress environment variable `disableSchemaValidation` to `true`. By default, schema validation is enabled.
+- To **disable schema validation** even when the `cy.validateSchema()` command is present in the test, set the Cypress environment variable **`disableSchemaValidation`** to **`true`**. By default, schema validation is enabled.
 
 - To **enable the display of schema errors** directly in the user interfaces of the `@bahmutov/cy-api` and `cypress-plugin-api` plugins, set the Cypress environment variable **`enableMismatchesOnUI`** to **`true`**. By default, this feature is disabled.
 
@@ -384,7 +384,7 @@ The only slight differences are the schema error properties presented in the Cyp
 
 ## DISABLE JSON SCHEMA VALIDATION IN YOUR TESTS
 
-You can disable schema validation in your tests by setting the Cypress environment variable `disableSchemaValidation` to `true`.
+You can disable schema validation in your tests by setting the Cypress environment variable **`disableSchemaValidation`** to **`true`**.
 
 The environment variable can be set in various locations, depending on the specific contexts in which you want to disable the functionality.
 - **Cypress Configuration File (`cypress.config.js`)**: This is useful for applying settings globally across all tests.
