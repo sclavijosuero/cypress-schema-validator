@@ -2,10 +2,10 @@
 
 A Cypress plugin for API schema validation. It leverages the core-ajv-schema-validator powered by the AJV package (for plain JSON schemas, Swagger documents, and OpenAPI schemas) as well as the core-zod-schema-validator powered by the ZOD package (for Zod schemas).
 
-> 🚀🚀🚀 **IMPORTANT NOTE: This plugin `cypress-schema-validator` replaces the previously existing `cypress-ajv-schema-validator`, maintaining complete backward compatibility while extending the API to support Zod schema validation capabilities.** 
 
 ![Overview](videos/overview.gif) 
 
+&nbsp; 
 
 ## MAIN FEATURES
 
@@ -43,6 +43,10 @@ A Cypress plugin for API schema validation. It leverages the core-ajv-schema-val
 > `cy.api('/users/1').validateSchema(schema);`
 >
 > For detailed examples of `cypress-schema-validator` used with the `@bahmutov/cy-api` and `cypress-plugin-api` plugins in the Swagger Petstore API, refer to the sample test files: [test-petstore-with-cypress-plugin-api.js](cypress/e2e/test-petstore-with-cypress-plugin-api.js) and [test-multiple-api.js](cypress/e2e/test-multiple-api.js).
+
+&nbsp;
+
+> ✔️✔️✔️ **NOTE:** The `cypress-schema-validator` plugin replaces the legacy `cypress-ajv-schema-validator`. It maintains full backward compatibility while extending the API to support **Zod Schema Validation** in addition to **AJV Schema Validation**. 
 
 &nbsp; 
 
@@ -470,6 +474,9 @@ Thank you for your support!
 
 
 ## CHANGELOG
+
+### [1.0.1]
+- Update documentation regarding the legacy plugin `cypress-ajv-schema-validator`.
 
 ### [1.0.0]
 - Initial release of `cypress-schema-validator`, supporting both AJV and ZOD schema validations.
