@@ -27,7 +27,7 @@ const colorDisabledValidation = '#e0e030'
 const responseValid  = `**THE RESPONSE BODY IS VALID AGAINST THE SCHEMA.**`
 const responseInvalid = `**THE RESPONSE BODY IS NOT VALID AGAINST THE SCHEMA ⛔ (Number of schema errors: $NUM_ERRORS$) ⛔**`
 const warningDisableSchemaValidation = `⚠️ API SCHEMA VALIDATION DISABLED ⚠️`
-const msgDisableSchemaValidation = '- The Cypress environment variable "disableSchemaValidation" has been set to true.'
+const msgDisableSchemaValidation = '- The exposed configuration "disableSchemaValidation" has been set to true.'
 const errorNoValidApiResponse = 'The element chained to the cy.validateSchema() command is expected to be an API response!'
 const errorResponseBodyAgainstSchema = 'The response body is not valid against the schema!'
 
