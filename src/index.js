@@ -140,7 +140,7 @@ Cypress.Commands.add("validateSchemaZod", { prevSubject: true }, cy_validateSche
 
 const _validateSchema = (response, validatorType, schema, path, issuesStyles) => {
 
-    if (Cypress.env('disableSchemaValidation')) {
+    if (Cypress.expose('disableSchemaValidation')) {
         cy.colorLog(msgDisableSchemaValidation,
             colorDisabledValidation,
             { displayName: warningDisableSchemaValidation }
@@ -419,5 +419,5 @@ const showDataMismatchesApiViewFilip = ($content, instancePathArray, errorDescri
  * and the `enableMismatchesOnUI` environment variable is set; otherwise, `false`.
  */
 const mustEnableMismatchesOnUI = () => {
-    return Cypress.config('isInteractive') && Cypress.env('enableMismatchesOnUI')
+    return Cypress.config('isInteractive') && Cypress.expose('enableMismatchesOnUI')
 }
