@@ -27,14 +27,14 @@
   },
   "homepage": "https://github.com/sclavijosuero/cypress-schema-validator#readme",
   "devDependencies": {
-    "@bahmutov/cy-api": "^2.2.6",
-    "cypress": "^13.17.0",
+    "@bahmutov/cy-api": "^2.2.10",
+    "cypress": "^15.12.0",
     "zod": "^3.25.46"
   },
   "dependencies": {
     "core-ajv-schema-validator": "^1.0.0",
     "core-zod-schema-validator": "^1.0.0",
     "cypress-plugin-api": "^2.11.2",
-    "highlight.js": "^11.10.0"
+    "highlight.js": "^11.11.1"
   }
 }
