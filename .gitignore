@@ -2,6 +2,7 @@
 /cypress/videos/
 /cypress/screenshots/
 /cypress/downloads/
+/cypress/reports/
 
 # Node.js dependencies
 /node_modules/

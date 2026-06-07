@@ -35,18 +35,27 @@ A Cypress plugin for API schema validation. It leverages the core-ajv-schema-val
 
 ✔️ Environment variable **`disableSchemaValidation`** to disable schema validation in your tests.
 
-✔️ Fully integrates with **Gleb Bahmutov**'s [@bahmutov/cy-api](https://github.com/bahmutov/cy-api) and **Filip Hric**'s [cypress-plugin-api](https://github.com/filiphric/cypress-plugin-api) plugins, allowing JSON schema validations to be performed immediately after the `cy.api()` command.
+✔️ Environment variable **`generateReport`** to generate a report of the schema validation (JSON). - **_New in v2.0.0_**
+
+✔️ Fully integrates with **Gleb Bahmutov**'s [@bahmutov/cy-api](https://github.com/bahmutov/cy-api) plugin, allowing JSON schema validations to be performed immediately after the `cy.api()` command.
    - With the environment variable **`enableMismatchesOnUI`** enabled, schema errors are displayed directly in the user interface of these plugins for enhanced visibility.
 
-> ⭐⭐⭐⭐⭐ Example usage with **@bahmutov/cy-api** and **cypress-plugin-api** plugins:
+&nbsp; 
+
+> ⭐⭐⭐ Example usage with **@bahmutov/cy-api** plugin
 > 
 > `cy.api('/users/1').validateSchema(schema);`
 >
-> For detailed examples of `cypress-schema-validator` used with the `@bahmutov/cy-api` and `cypress-plugin-api` plugins in the Swagger Petstore API, refer to the sample test files: [test-petstore-with-cypress-plugin-api.js](cypress/e2e/test-petstore-with-cypress-plugin-api.js) and [test-multiple-api.js](cypress/e2e/test-multiple-api.js).
+> For detailed examples of `cypress-schema-validator` used with the `@bahmutov/cy-api` plugin in the Swagger Petstore API, refer to the sample test files: [test-multiple-api-with-cy-api-override-style.js](cypress/e2etest-multiple-api-with-cy-api-override-style.js) and [test-multiple-api-with-cy-api.js](cypress/e2e/test-multiple-api-with-cy-api.js).
+
+&nbsp; 
+
+> ⚠️⚠️⚠️ Deprecation Notice: **cypress-plugin-api**
+>   Removed in `cypress-schema-validator` v2.0.0 due to Cypress v16 compatibility issues (`cy.env()` and `Cypress.exposed()`). Support is limited to `cypress-schema-validator` v1.0.1 and below.
 
 &nbsp;
 
-> ✔️✔️✔️ **NOTE:** The `cypress-schema-validator` plugin replaces the legacy `cypress-ajv-schema-validator`. It maintains full backward compatibility while extending the API to support **Zod Schema Validation** in addition to **AJV Schema Validation**. 
+> ✔️✔️✔️ **IMPORTANT NOTE:** The `cypress-schema-validator` plugin replaces the legacy `cypress-ajv-schema-validator`. It maintains full backward compatibility while extending the API to support **Zod Schema Validation** in addition to **AJV Schema Validation**. 
 
 &nbsp; 
 
@@ -100,9 +109,16 @@ A Cypress plugin for API schema validation. It leverages the core-ajv-schema-val
 
 ## COMPATIBILITY
 
-- Cypress 12.0.0 or higher
+### Cypress v15.10+
+- Use **cypress-schema-validator** *v*2.0.0 or greater
+- Use of `cy.env` and `Cypress.expose` (https://docs.cypress.io/app/references/migration-guide#Migrating-away-from-Cypressenv)
+- Support integration with the latest version of `@bahmutov/cy-api`
+- Decommissioned integration with `cypress-plugin-api`, which has not been updated to support Cypress v16.
+
+### Cypress v12.0.0 - v15.9.0
 - Ajv 8.16.0 or higher
 - ajv-formats 3.0.1 or higher
+- Support integration with `@bahmutov/cy-api` and `cypress-plugin-api` plugins
   
 For Typescript projects also:
 - TypeScript 4.5+
@@ -117,15 +133,34 @@ npm install -D cypress-schema-validator
 
 ## CONFIGURATION
 
+- Configure the report directory using the `reportsFolder` parameter in `cypress.config.js`. Defaults to `cypress/reports`.
+
+  ```js
+  module.exports = defineConfig({
+     // New config option for cypress-schema-validator v2.0.0
+    reportsFolder: 'cypress/reports',
+    
+    // Rest of your configuration
+    // [...]
+  })
+  ```
+
 - Add the following lines either to your `cypress/support/commands.js` to include the custom command and function globally, or directly in the test file that will host the schema validation tests:
 
   ```js
   import 'cypress-schema-validator';
   ```
 
-- To **disable schema validation** even when the `cy.validateSchema()` command is present in the test, set the Cypress environment variable **`disableSchemaValidation`** to **`true`**. By default, schema validation is enabled.
+- To **disable schema validation** even when the `cy.validateSchema()` command is present in the test, set the Cypress environment variable or exposed variable **`disableSchemaValidation`** to **`true`**. By default, schema validation is enabled.
 
-- To **enable the display of schema errors** directly in the user interfaces of the `@bahmutov/cy-api` and `cypress-plugin-api` plugins, set the Cypress environment variable **`enableMismatchesOnUI`** to **`true`**. By default, this feature is disabled.
+- To **enable the display of schema errors** directly in the user interfaces of the `@bahmutov/cy-api` and `cypress-plugin-api` plugins, set the Cypress environment variable or exposed variable **`enableMismatchesOnUI`** to **`true`**. By default, this feature is disabled.
+
+- To **enable the generation of JSON schema validation reports**, set the generateReport environment or exposed variable to json (disabled by default). Only json is supported at this time.
+
+   > ✳️Starting in Cypress v15.10.0, you can configure **cypress-schema-validator** using the two environment variables `disableSchemaValidation` and `enableMismatchesOnUI`. These can be defined either as **regular (non-exposed)** or **exposed** Cypress environment variables.
+   > This ensures **full backward compatibility** with previous versions and existing projects, configurations, and tests created using versions of cypress-schema-validator prior to Cypress v15.10.0.**.
+   >
+   > **NOTE: If an environment variable is defined both as exposed and non-exposed, the non-exposed value takes priority.**
 
 &nbsp; 
 
@@ -402,14 +437,6 @@ When the Cypress environment variable **`enableMismatchesOnUI`** is set to **`tr
 
 ![Plugin @bahmutov/cy-api](images/cy_api_1_details_a.png) 
 
-#### Integration with Filip Hric's `cypress-plugin-api`
-
-Similarly, when the Cypress environment variable **`enableMismatchesOnUI`** is set to **`true`**, and the `cypress-plugin-api` plugin is imported into your `cypress/support/commands.js` or test file, schema violations will be shown in the plugin's UI.
-
-![Plugin cypress-plugin-api](images/cy_api_2_a.png) 
-
-![Plugin @bahmutov/cy-api](images/cy_api_2_details_a.png) 
-
 
 ### Custom Styles for Validation Errors
 
@@ -434,15 +461,89 @@ The only slight differences are the schema error properties presented in the Cyp
 
 &nbsp; 
 
+## ENABLE CREATION OF JSON REPORTS FOR SCHEMA VALIDATIONS
+
+You can enable the generation of JSON reports for your schema validations by setting the Cypress environment (or exposed) variable **`generateReport`** to **`json`**.
+
+**Note:** This feature is disabled by default, and json is currently the only supported format.
+
+When enabled, each validation command `cy.validateSchema()`, `cy.validateSchemaAjv()`, or `cy.validateSchemaZod()` generates a report file in the directory configured by reportsFolder in cypress.config.js.
+
+### File Name Format
+
+`schema-validation-report-{uniqueId}_{timestamp}.json`
+
+Where:
+- `uniqueId` is generated with Cypress utility `Cypress._.uniqueId('id')` (for example: `id1`, `id2`, `id36`).
+- `timestamp` is generated from ISO date-time and normalized for file systems by replacing `:` and `.` with `-`.
+
+Example:
+- `schema-validation-report-id36_2026-06-06T23-58-42-001Z.json`
+
+
+### JSON Report File Content
+
+Each generated report is a JSON object with the following structure:
+
+Example:
+```json
+{
+  "timestamp": "2026-06-07T00-45-49-966Z",
+  "test": "ALL TESTS SHOULD FAIL > Schema Validation for Swagger 2.0 > POST /service1 (401 Response)",
+  "validationResults": {
+    "errors": [
+      {
+        "instancePath": "/code",
+        "schemaPath": "#/definitions/ErrorResponse/properties/code/type",
+        "keyword": "type",
+        "params": {
+          "type": "integer"
+        },
+        "message": "must be integer"
+      },
+      {
+        "instancePath": "/message",
+        "schemaPath": "#/definitions/ErrorResponse/properties/message/type",
+        "keyword": "type",
+        "params": {
+          "type": "string"
+        },
+        "message": "must be string"
+      }
+    ],
+    "dataMismatches": {
+      "code": "⚠️ null must be integer",
+      "message": "⚠️ 123456 must be string"
+    }
+  },
+  "data": {
+    "code": null,
+    "message": 123456
+  }
+}
+```
+
+#### Top-level properties
+
+- `timestamp` (`string`): Report creation date-time in ISO-like format used in the file name (for example: `2026-06-06T23-58-42-001Z`).
+- `test` (`string`): Full Cypress test path/title where the validation was executed.
+- `validationResults` (`object`): Validation output (errors and highlighted mismatches).
+- `data` (`array | object`): Original response payload that was validated.
+
+##### `validationResults` properties
+
+- `errors` (`array`): List of validation errors returned by the active validator (Ajv or Zod).
+- `dataMismatches` (`array | object`): Copy of validated `data` response with mismatch markers added by the plugin.
+  - `dataMismatches` mirrors the `data` structure and adds marker strings (icon + message) at failing paths.
+  - Examples of a field mismatches:
+    - `"code": "⚠️ null must be integer"`
+    - `"createdDate": "❌ Missing property 'createdDate'`
+  - Note: Top-level property `data` always stores the original validated payload unchanged (same shape as the API response).
+
+
 ## DISABLE JSON SCHEMA VALIDATION IN YOUR TESTS
 
-You can disable schema validation in your tests by setting the Cypress environment variable **`disableSchemaValidation`** to **`true`**.
-
-The environment variable can be set in various locations, depending on the specific contexts in which you want to disable the functionality.
-- **Cypress Configuration File (`cypress.config.js`)**: This is useful for applying settings globally across all tests.
-- **Cypress Environment File `(cypress.env.json)`**: Use this for setting environment variables to be accessible during specific test runs.
-- **Command Line Interface (CLI) using `--env`**: This is ideal for temporary overrides during specific test executions without affecting other configurations.
-- **Within Test Configuration**: Set it directly in the test file for precise control over individual test behaviors.
+You can disable schema validation in your tests by setting the Cypress environment (or exposed) variable **`disableSchemaValidation`** to **`true`**.
 
 When schema validation is disabled for a test, the Cypress log and the browser console will display the following message:
 
@@ -475,14 +576,27 @@ Thank you for your support!
 
 ## CHANGELOG
 
+### [2.0.0]
+- Added support to generate a schema validation report (JSON).
+- Added support for the new environment variable handling in v15.10+ (`cy.env` and `Cypress.expose`).
+- Migrated package to Cypress v15.16.0.
+- Major release due a breaking change that will be introduced in the Cypress v16 release.
+- Cypress.env deprecated in Cypress v15.10.0 and no loger supported in Cypress v16.0.0.
+- **cypress-ajv-schema-validator** v2.0.0 is not supported on versions earlier than v15.10.0.
+- Decommissioned support for **`cypress-plugin-api`**, as it has not been updated to work with `cy.env()` and `Cypress.exposed()`.
+
+
 ### [1.0.1]
 - Update documentation regarding the legacy plugin `cypress-ajv-schema-validator`.
+
 
 ### [1.0.0]
 - Initial release of `cypress-schema-validator`, supporting both AJV and ZOD schema validations.
 
+
 ### [cypress-ajv-schema-validator 2.0.1]
-- Predecessor to the `cypress-schema-validator`
+- Predecessor to the `cypress-schema-validator`.
+- The legacy plugin `cypress-ajv-schema-validator` has been decommissioned and is no longer officially supported.
 
 
 ## EXTERNAL REFERENCES

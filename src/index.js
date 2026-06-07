@@ -1,8 +1,8 @@
 /// <reference types="cypress" />
 
 import hljs from 'highlight.js'
-import { validateSchema as  validateSchemaAjv} from 'core-ajv-schema-validator'
-import { validateSchemaZod} from 'core-zod-schema-validator'
+import { validateSchema as validateSchemaAjv } from 'core-ajv-schema-validator'
+import { validateSchemaZod } from 'core-zod-schema-validator'
 
 import './custom-log.js'
 
@@ -24,7 +24,7 @@ const issuesStylesDefault = {
 
 const colorDisabledValidation = '#e0e030'
 
-const responseValid  = `**THE RESPONSE BODY IS VALID AGAINST THE SCHEMA.**`
+const responseValid = `**THE RESPONSE BODY IS VALID AGAINST THE SCHEMA.**`
 const responseInvalid = `**THE RESPONSE BODY IS NOT VALID AGAINST THE SCHEMA ⛔ (Number of schema errors: $NUM_ERRORS$) ⛔**`
 const warningDisableSchemaValidation = `⚠️ API SCHEMA VALIDATION DISABLED ⚠️`
 const msgDisableSchemaValidation = '- The Cypress environment variable "disableSchemaValidation" has been set to true.'
@@ -127,7 +127,7 @@ Cypress.Commands.add("validateSchemaAjv", { prevSubject: true }, cy_validateSche
  */
 const cy_validateSchemaZod = (response, schema, issuesStyles) => {
     _validateSchema(response, 'zod', schema, undefined, issuesStyles)
-    
+
     return cy.wrap(response, { log: false })
 }
 
@@ -140,37 +140,73 @@ Cypress.Commands.add("validateSchemaZod", { prevSubject: true }, cy_validateSche
 
 const _validateSchema = (response, validatorType, schema, path, issuesStyles) => {
 
-    if (Cypress.env('disableSchemaValidation')) {
-        cy.colorLog(msgDisableSchemaValidation,
-            colorDisabledValidation,
-            { displayName: warningDisableSchemaValidation }
-        )
+    cy.env(['disableSchemaValidation', 'generateReport']).then(
+        ({ disableSchemaValidation = Cypress.expose('disableSchemaValidation'), generateReport = Cypress.expose('generateReport') }) => {
+            if (disableSchemaValidation) {
+                cy.colorLog(msgDisableSchemaValidation,
+                    colorDisabledValidation,
+                    { displayName: warningDisableSchemaValidation }
+                )
 
-        console.log(`${warningDisableSchemaValidation} ${msgDisableSchemaValidation}`)
-    } else {
-        // Check if it is a valid API Response object
-        if (response == null || (!response.hasOwnProperty('body') && !response.hasOwnProperty('status') && !response.hasOwnProperty('headers'))) {
-            console.log(errorNoValidApiResponse)
-            throw new Error(errorNoValidApiResponse)
-        }
+                console.log(`${warningDisableSchemaValidation} ${msgDisableSchemaValidation}`)
+            } else {
+                // Check if it is a valid API Response object
+                if (response == null || (!response.hasOwnProperty('body') && !response.hasOwnProperty('status') && !response.hasOwnProperty('headers'))) {
+                    console.log(errorNoValidApiResponse)
+                    throw new Error(errorNoValidApiResponse)
+                }
 
-        const data = response.body
+                const data = response.body
 
-        issuesStyles = { ...issuesStylesDefault, ...issuesStyles }
+                issuesStyles = { ...issuesStylesDefault, ...issuesStyles }
 
-        // Validate the response body against the schema
-        const validationResult = (validatorType === 'zod') ?
-            validateSchemaZod(data, schema, issuesStyles) : 
-            validateSchemaAjv(data, schema, path, issuesStyles)
+                // Validate the response body against the schema
+                const validationResult = (validatorType === 'zod') ?
+                    validateSchemaZod(data, schema, issuesStyles) :
+                    validateSchemaAjv(data, schema, path, issuesStyles)
 
-        // Log the validation result
-        _logValidationResult(data, validationResult, issuesStyles)
+                // Generate Report the validation result
+                _generateReport(generateReport, data, validationResult)
 
-        // Return the response object so it can be chained with other commands
-    }
+                // Cypress Log the validation result
+                _logValidationResult(data, validationResult, issuesStyles)
+
+
+            }
+        })
+
     return cy.wrap(response, { log: false })
 }
 
+
+const _generateReport = (generateReport, data, validationResults) => {
+
+    // NOTE: Only format supported is json, otherwise it will be ignored and no report generated.
+
+    if (generateReport === 'json') {
+        // Implement JSON report generation logic here
+        const reportsFolder = Cypress.config('reportsFolder') || 'cypress/reports'
+        const timestamp = new Date().toISOString().replace(/[:.]/g, '-')
+        const uniqueId = Cypress._.uniqueId('id')
+        const fileName = `${reportsFolder}/schema-validation-report-${uniqueId}_${timestamp}.json`
+
+        const validationResultsToSave = Cypress._.omit(
+            Cypress._.cloneDeep(validationResults),
+            'issuesStyles'
+        )
+
+        const reportData = {
+            timestamp,
+            test: Cypress.currentTest.titlePath.join(' > '),
+            validationResults: validationResultsToSave,
+            data
+        }
+
+        cy.writeFile(fileName, reportData, { encoding: 'utf-8' })
+    }
+    // Note Other formats no supported or generateReport not set
+
+}
 
 /**
  * Logs the validation result and throws an error if the response body is not valid against the schema, otherwise logs a success message.
@@ -192,140 +228,146 @@ const _validateSchema = (response, validatorType, schema, path, issuesStyles) =>
   */
 const _logValidationResult = (data, validationResults, issuesStyles, maxErrorsToShow = 10) => {
 
-    let { errors, dataMismatches } = validationResults
-    // Log in the console the test path
-    console.log ('SCHEMA VALIDATION FOR TEST: ', Cypress.currentTest.titlePath.join(' > '))
+    cy.env(['enableMismatchesOnUI']).then(({ enableMismatchesOnUI = Cypress.expose('enableMismatchesOnUI') }) => {
 
-    if (!errors) {
-        // PASSED
+        const mustEnableMismatchesOnUI = Cypress.config('isInteractive') && enableMismatchesOnUI
 
-        // Log in the Console 
-        console.log(`  ${iconPassed} PASSED - ${responseValid}`)
+        let { errors, dataMismatches } = validationResults
+        // Log in the console the test path
+        console.log('SCHEMA VALIDATION FOR TEST: ', Cypress.currentTest.titlePath.join(' > '))
 
-        // Log in Cypress Log
-        cy.colorLog(responseValid,
-            '#66d966',
-            { displayName: `${iconPassed} PASSED -` },
-            '14px'
-        )
-    } else {
-        // FAILED
-        let cy_api_type
+        if (!errors) {
+            // PASSED
 
-        let $original, $cloned, $elem
-        const enableMismatchesOnUI = mustEnableMismatchesOnUI()
+            // Log in the Console 
+            console.log(`  ${iconPassed} PASSED - ${responseValid}`)
 
-        if (enableMismatchesOnUI) {
-            $original = Cypress.$('[id="api-plugin-root"] [id="api-view"]')
-            if ($original.length !== 0) {
-                cy_api_type = "filip"
-                // Create clone of the DOM tree
-                $cloned = $original.clone()
-                // Find the last section in the clone to add the mismatches
-                $elem = $cloned.find('section:last-of-type [data-cy="responseBody"] code > details > summary')
-            } else {
-                $original = Cypress.$('.cy-api-response:last-of-type pre')
-                if ($original.length !== 0) {
-                    cy_api_type = "gleb"
-                }
-            }
-        }
-
-        const { iconPropertyError, colorPropertyError, iconPropertyMissing, colorPropertyMissing } = issuesStyles
-
-        if (cy_api_type === "filip") {
-            // Filip's API View needs it's own processing to show the mismatches (similar logic as for package core-ajv-schema-validator)
-
-            errors.forEach(error => {
-                let instancePathArray = error.instancePath.replace(/^\//, '').split('/') // Remove the first '/' from the instance path "/0/name" => "0/name"
-                let instancePath = instancePathArray.join('.')
-
-                let errorDescription
-                let value = Cypress._.get(data, instancePath)
-
-                const existError =  error.keyword === 'required' || error.message === "Required"
-
-                if (existError) {
-                    const missingProperty = error.params.missingProperty
-                    instancePath = (instancePath === "") ? missingProperty : `${instancePath}.${missingProperty}`
-
-                    errorDescription = `${iconPropertyMissing} Missing property '${missingProperty}'`
-                } else {
-                    const message = error.message
-                    errorDescription = `${iconPropertyError} ${String(JSON.stringify(value)).replaceAll("\"", "'")} ${message}` // We also use String() to handle the case of undefined values
-                }
-
-                if (enableMismatchesOnUI && $elem && $elem.length) {
-                    // Show in the API View the data with the mismatches
-                    showDataMismatchesApiViewFilip($elem, instancePathArray, errorDescription, error, issuesStyles, 0)
-                }
-            })
-        }
-
-        if (enableMismatchesOnUI) {
-            // Replace the original DOM tree with the cloned one with the mismatches
-            if (cy_api_type === "filip") {
-                $original.replaceWith($cloned)
-            } else if (cy_api_type === "gleb") {
-                $original.replaceWith(Cypress.$(transformDataToHtmlGleb(dataMismatches, issuesStyles)))
-            }
-        }
-
-        // Show in Cypress Log an error message saying that the schema validation failed and total number of errors
-        // On click, it will show in the console:
-        //   - Total number of errors
-        //   - Full list of errors as provided by AJV
-        //   - User friendly representation of the mismatches in the data ❤️
-        cy.colorLog(responseInvalid.replace('$NUM_ERRORS$', errors.length),
-            '#e34040',
-            { displayName: `${iconFailed} FAILED -`, info: { number_of_schema_errors: errors.length, schema_errors: errors, data_mismatches: dataMismatches } },
-            '14px'
-        )
-
-        // Logic to create two group of errors: the first 'maxErrorsToShow' and the rest of errors (to avoid showing a huge amount of errors in the Cypress Log)
-        // Note that if the total number of errors is 'maxErrorsToShow'+1 it will show all the errors since there will anyway one more line
-        let errorsToShow, rest_of_errors
-
-        if (errors.length > maxErrorsToShow + 1) {
-            errorsToShow = errors.slice(0, maxErrorsToShow)
-            rest_of_errors = errors.slice(maxErrorsToShow)
+            // Log in Cypress Log
+            cy.colorLog(responseValid,
+                '#66d966',
+                { displayName: `${iconPassed} PASSED -` },
+                '14px'
+            )
         } else {
-            errorsToShow = errors
-        }
+            // FAILED
+            let cy_api_type
 
-        // Show in the CYPRESS LOG the first 'maxErrorsToShow' as provided by AJV or ZOD
-        errorsToShow.forEach(error => {
-            const existError =  error.keyword === 'required' || error.message === "Required"
-            const iconError = existError ? iconPropertyMissing : iconPropertyError
-            const colorError = existError ? colorPropertyMissing : colorPropertyError
+            let $original, $cloned, $elem
 
-            cy.colorLog(`${JSON.stringify(error, "", 1)}`,
-                colorError,
-                { displayName: iconError, info: { schema_error: error } }
+            if (mustEnableMismatchesOnUI) {
+                $original = Cypress.$('[id="api-plugin-root"] [id="api-view"]')
+                if ($original.length !== 0) {
+                    cy_api_type = "filip"
+                    // Create clone of the DOM tree
+                    $cloned = $original.clone()
+                    // Find the last section in the clone to add the mismatches
+                    $elem = $cloned.find('section:last-of-type [data-cy="responseBody"] code > details > summary')
+                } else {
+                    $original = Cypress.$('.cy-api-response:last-of-type pre')
+                    if ($original.length !== 0) {
+                        cy_api_type = "gleb"
+                    }
+                }
+            }
+
+            const { iconPropertyError, colorPropertyError, iconPropertyMissing, colorPropertyMissing } = issuesStyles
+
+            if (cy_api_type === "filip") {
+                // Filip's API View needs it's own processing to show the mismatches (similar logic as for package core-ajv-schema-validator)
+
+                errors.forEach(error => {
+                    let instancePathArray = error.instancePath.replace(/^\//, '').split('/') // Remove the first '/' from the instance path "/0/name" => "0/name"
+                    let instancePath = instancePathArray.join('.')
+
+                    let errorDescription
+                    let value = Cypress._.get(data, instancePath)
+
+                    const existError = error.keyword === 'required' || error.message === "Required"
+
+                    if (existError) {
+                        const missingProperty = error.params.missingProperty
+                        instancePath = (instancePath === "") ? missingProperty : `${instancePath}.${missingProperty}`
+
+                        errorDescription = `${iconPropertyMissing} Missing property '${missingProperty}'`
+                    } else {
+                        const message = error.message
+                        errorDescription = `${iconPropertyError} ${String(JSON.stringify(value)).replaceAll("\"", "'")} ${message}` // We also use String() to handle the case of undefined values
+                    }
+
+                    if (mustEnableMismatchesOnUI && $elem && $elem.length) {
+                        // Show in the API View the data with the mismatches
+                        showDataMismatchesApiViewFilip($elem, instancePathArray, errorDescription, error, issuesStyles, 0)
+                    }
+                })
+            }
+
+            if (mustEnableMismatchesOnUI) {
+                // Replace the original DOM tree with the cloned one with the mismatches
+                if (cy_api_type === "filip") {
+                    $original.replaceWith($cloned)
+                } else if (cy_api_type === "gleb") {
+                    $original.replaceWith(Cypress.$(transformDataToHtmlGleb(dataMismatches, issuesStyles)))
+                }
+            }
+
+            // Show in Cypress Log an error message saying that the schema validation failed and total number of errors
+            // On click, it will show in the console:
+            //   - Total number of errors
+            //   - Full list of errors as provided by AJV
+            //   - User friendly representation of the mismatches in the data ❤️
+            cy.colorLog(responseInvalid.replace('$NUM_ERRORS$', errors.length),
+                '#e34040',
+                { displayName: `${iconFailed} FAILED -`, info: { number_of_schema_errors: errors.length, schema_errors: errors, data_mismatches: dataMismatches } },
+                '14px'
             )
-        })
-        // Show in the CYPRESS LOG Log the rest of errors if there are more than 'maxErrorsToShow' as provided by AJV
-        if (rest_of_errors) {
-            cy.colorLog(`...and ${errors.length - maxErrorsToShow} more errors.`,
-                colorPropertyMissing,
-                { displayName: iconMoreErrors, info: { rest_of_errors } }
-            )
+
+            // Logic to create two group of errors: the first 'maxErrorsToShow' and the rest of errors (to avoid showing a huge amount of errors in the Cypress Log)
+            // Note that if the total number of errors is 'maxErrorsToShow'+1 it will show all the errors since there will anyway one more line
+            let errorsToShow, rest_of_errors
+
+            if (errors.length > maxErrorsToShow + 1) {
+                errorsToShow = errors.slice(0, maxErrorsToShow)
+                rest_of_errors = errors.slice(maxErrorsToShow)
+            } else {
+                errorsToShow = errors
+            }
+
+            // Show in the CYPRESS LOG the first 'maxErrorsToShow' as provided by AJV or ZOD
+            errorsToShow.forEach(error => {
+                const existError = error.keyword === 'required' || error.message === "Required"
+                const iconError = existError ? iconPropertyMissing : iconPropertyError
+                const colorError = existError ? colorPropertyMissing : colorPropertyError
+
+                cy.colorLog(`${JSON.stringify(error, "", 1)}`,
+                    colorError,
+                    { displayName: iconError, info: { schema_error: error } }
+                )
+            })
+            // Show in the CYPRESS LOG Log the rest of errors if there are more than 'maxErrorsToShow' as provided by AJV
+            if (rest_of_errors) {
+                cy.colorLog(`...and ${errors.length - maxErrorsToShow} more errors.`,
+                    colorPropertyMissing,
+                    { displayName: iconMoreErrors, info: { rest_of_errors } }
+                )
+            }
+
+            // Log in the CONSOLE the full list of errors
+            const msgError = `${iconFailed} FAILED - ${responseInvalid.replace('$NUM_ERRORS$', errors.length)}`
+            console.log(`  ${msgError}`)
+            // errors.map(e => JSON.stringify(e)).join('\n')
+
+            // Throw an error to fail the test
+            cy.then(() => {
+                const exceptionMsg = Cypress.config('isInteractive') ?
+                    errorResponseBodyAgainstSchema :
+                    `${msgError}\n` + errors.map(e => JSON.stringify(e)).join('\n')
+
+                throw new Error(exceptionMsg)
+            })
+
         }
+    })
 
-        // Log in the CONSOLE the full list of errors
-        const msgError = `${iconFailed} FAILED - ${responseInvalid.replace('$NUM_ERRORS$', errors.length)}`
-        console.log(`  ${msgError}`)
-        // errors.map(e => JSON.stringify(e)).join('\n')
-
-        // Throw an error to fail the test
-        cy.then(() => {
-            const exceptionMsg = Cypress.config('isInteractive') ?
-                errorResponseBodyAgainstSchema :
-                `${msgError}\n` + errors.map(e => JSON.stringify(e)).join('\n')
-
-            throw new Error(exceptionMsg)
-        })
-    }
 }
 
 
@@ -411,13 +453,3 @@ const showDataMismatchesApiViewFilip = ($content, instancePathArray, errorDescri
     }
 }
 
-/**
- * Determines whether mismatches should be enabled on the UI.
- * This is based on the Cypress configuration and environment variables.
- *
- * @returns {boolean} - Returns `true` if the Cypress environment is interactive
- * and the `enableMismatchesOnUI` environment variable is set; otherwise, `false`.
- */
-const mustEnableMismatchesOnUI = () => {
-    return Cypress.config('isInteractive') && Cypress.env('enableMismatchesOnUI')
-}
